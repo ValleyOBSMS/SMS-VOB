@@ -1,0 +1,57 @@
+// variuables
+$color-site: #222222;
+$color-hover: #004a7f;
+
+$color-white: #ffffff;
+$color-gray: #dbdfe9;
+
+// @include common-transition(all 0.3s ease-out);
+@mixin common-transition($transition){
+	-webkit-transition: $transition;
+	-moz-transition: $transition;
+	-o-transition: $transition;
+	transition: $transition;
+}
+
+// @include box-shadow(10px 10px 5px 0px rgba(0,0,0,0.75));
+@mixin box-shadow($shadow) {
+	-webkit-box-shadow: $shadow;
+	-moz-box-shadow: $shadow;
+	-ms-shadow: $shadow;
+	box-shadow: $shadow;
+}
+
+// @include transform();
+@mixin transform($transforms) {
+	-webkit-transform: $transforms;
+	-moz-transform: $transforms;
+	-ms-transform: $transforms;
+	transform: $transforms;
+}
+
+// @extend %d-flex;
+%d-flex{
+	display: -webkit-flex;
+	display: -moz-flex;
+	display: -ms-flex;
+	display: -o-flex;
+	display: flex;	
+}
+
+// @extend %flex-wrap;
+%flex-wrap{
+	-webkit-flex-wrap: wrap;
+	-moz-flex-wrap: wrap;
+	-ms-flex-wrap: wrap;
+	-o-flex-wrap: wrap;
+	flex-wrap: wrap;
+}
+
+// @extend %flex-column;
+%flex-column{
+	-webkit-flex-direction: column;
+	-moz-flex-direction: column;
+	-ms-flex-direction: column;
+	-o-flex-direction: column;
+	flex-direction: column;
+}

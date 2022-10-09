@@ -1,0 +1,10 @@
+export {default as Logo} from './logo.svg';
+export { default as searchIcon } from './search-icon.png';
+export { default as upDwnArr } from './up-dwn-arr.png';
+export { default as Email } from './email.png';
+export { default as emailBlue } from './emailblue.png';
+export { default as shareClock } from './share-clock.png';
+export { default as shareClockBlue } from './share-clock-blue.png';
+export { default as Logout } from './logout.png';
+export { default as IconFeatherTrash } from './Icon-feather-trash.png';
+export { default as IconDownload } from './download.png';

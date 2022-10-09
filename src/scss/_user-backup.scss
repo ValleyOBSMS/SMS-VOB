@@ -1,0 +1,82 @@
+// user-backup-table-wrapp
+
+.user-backup-sec{
+	padding: 0 0 15px;
+	.user-popup-btns{
+		margin-bottom: 10px;
+		display: flex;
+		flex-wrap: wrap;
+		column-gap: 20px;
+		.custom-btn{
+			font-size: 14px;
+			text-transform: capitalize;
+			padding: 10px 20px;
+			letter-spacing: normal;
+		}
+	}
+}
+
+@keyframes blink{
+	0%{opacity: 0;}	
+	40%{opacity: 0;}
+	80%{opacity: 1;}
+	120%{opacity: 0;}
+}
+
+.user-backup-table-wrapp{
+	margin-left: 280px;
+	.custom-table{
+		.askEmail{
+			color: #d52424;
+			text-decoration: underline;
+			font-style: italic;			
+			transition: none;
+			animation: blink 0.5s linear infinite alternate;
+			&:hover{
+				animation: none;
+			}
+		}
+		a{
+			color: #000;
+		}
+		th,td{
+			min-width: auto;
+			&:first-child{
+				padding-left: 0;
+			}
+		}
+		th{
+			&:nth-child(1){min-width: 70px;}
+			&:nth-child(2){min-width: 250px;}
+			&:nth-child(3){min-width: 280px;}
+			&:nth-child(4){min-width: 200px;}
+		}
+	}	
+	.tb-btn{
+		border: none;
+		padding: 0;
+		font-size: 18px;
+	}
+	&.user-admin-table-wrapp{
+		th{
+			&:nth-child(1){min-width: 300px;}
+		}
+	}
+}
+
+.mdl-input-bx{
+	margin-bottom: 20px;
+	label{
+		font-weight: 500;
+		margin-bottom: 5px;
+	}
+	.form-control{
+		background-color: #f2f3f5;
+		border: 1px solid #f2f3f5;
+		padding: 10px 15px;
+	}
+}
+
+.popSubmit{
+	width: 100%;
+}
