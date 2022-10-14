@@ -1,19 +1,24 @@
 import { Route, Routes, BrowserRouter } from "react-router-dom";
-import AdminLogin from './pages/admin/adminLogin';
-import AdminPanel from './pages/admin/adminPanel';
-import AdminHistory from './pages/admin/adminHistory';
-import AdminMessage from './pages/admin/adminMessage';
+import AdminLogin from "./pages/admin/adminLogin";
+import AdminPanel from "./pages/admin/adminPanel";
+import AdminHistory from "./pages/admin/adminHistory";
+import AdminMessage from "./pages/admin/adminMessage";
+import React from "react";
+import UserLogin from "./pages/user/userLogin";
+import UserHistory from "./pages/user/userHistory";
+import UserPanel from "./pages/user/userPanel";
 
-import UserLogin from './pages/user/userLogin';
-import UserHistory from './pages/user/userHistory';
-import UserPanel from './pages/user/userPanel';
-
-import './scss/main.scss';
-import './App.css';
+import "./scss/main.scss";
+import "./App.css";
 
 function App() {
+  // const currentUser = false;
+  // const RequiredAuth = ({ children }) => {
+  //   return currentUser ? children : <Navigate to="/" />;
+  // };
+
   return (
-    <>
+    <div>
       <BrowserRouter>
         <Routes>
           {/* Admin Routes */}
@@ -28,7 +33,7 @@ function App() {
           <Route path="/user-history" element={<UserHistory />} />
         </Routes>
       </BrowserRouter>
-    </>
+    </div>
   );
 }
 
