@@ -11,14 +11,14 @@ const AdminHistory = () => {
   const [history, setHistory] = useState([]);
   const historyCollectionRef = collection(db, "history");
   useEffect(() => {
-    const getUsers = async () => {
+    const getHistory = async () => {
       const data = await getDocs(historyCollectionRef);
       setHistory(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
     };
-    getUsers();
+    getHistory();
   });
 
-  const deleteUser = async (id) => {
+  const deleteHistory = async (id) => {
     const swalWithBootstrapButtons = Swal.mixin({
       customClass: {
         confirmButton: "btn btn-success ",
@@ -107,7 +107,7 @@ const AdminHistory = () => {
                   <tbody>
                     {history.map((hist, index) => (
                       <tr key={index}>
-                        <td>{index+1}</td>
+                        <td>{index + 1}</td>
                         <td>{moment(hist.createdAt).format("DD-MM-YYYY")}</td>
                         <td>{hist.receiverEmail}</td>
                         <td>{hist.receiverPhoneNumber}</td>
@@ -119,7 +119,7 @@ const AdminHistory = () => {
                                 src={IconFeatherTrash}
                                 alt="Trash"
                                 onClick={() => {
-                                  deleteUser(hist.id);
+                                  deleteHistory(hist.id);
                                 }}
                               />
                             </span>

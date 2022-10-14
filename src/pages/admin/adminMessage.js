@@ -5,19 +5,23 @@ import { db } from "../../FirbaseConfig/Firbase-config";
 import Header from "./components/header";
 import moment from "moment";
 import Swal from "sweetalert2";
-import Paginations from "./Pagination/Pagination";
 const AdminMessage = () => {
+  //  Function for list Messages
+
   const [message, setMessage] = useState([]);
   const usersCollectionRef = collection(db, "messages");
+
   useEffect(() => {
-    const getUsers = async () => {
+    const getMessages = async () => {
       const data = await getDocs(usersCollectionRef);
       setMessage(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
     };
-    getUsers();
+    getMessages();
   });
 
-  const deleteUser = async (id) => {
+  //  Function for deltese messages
+
+  const deleteMssage = async (id) => {
     const swalWithBootstrapButtons = Swal.mixin({
       customClass: {
         confirmButton: "btn btn-success ",
@@ -60,16 +64,6 @@ const AdminMessage = () => {
       });
   };
 
-  // Pagination
-  const [showPerPage, setShowPerPage] = useState(3);
-  const [pagination, setPagination] = useState({
-    start: 0,
-    end: showPerPage,
-  });
-
-  const onPaginationChange = (start, end) => {
-    setPagination({ start: start, end: end });
-  };
   return (
     <>
       <section id="wrapper">
@@ -88,34 +82,27 @@ const AdminMessage = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {message
-                      .slice(pagination.start, pagination.end)
-                      .map((msg, index) => (
-                        <tr key={index}>
-                          <td>{moment(msg.createdAt).format("DD-MM-YYYY")}</td>
-                          <td>{msg.message}</td>
-                          <td className="text-center">
-                            <button className="tb-btn-smpl delete text-center">
-                              <span className="icon">
-                                <img
-                                  src={IconFeatherTrash}
-                                  alt="Trash"
-                                  onClick={() => {
-                                    deleteUser(msg.id);
-                                  }}
-                                />
-                              </span>
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
+                    {message.map((msg, index) => (
+                      <tr key={index}>
+                        <td>{moment(msg.createdAt).format("DD-MM-YYYY")}</td>
+                        <td>{msg.message}</td>
+                        <td className="text-center">
+                          <button className="tb-btn-smpl delete text-center">
+                            <span className="icon">
+                              <img
+                                src={IconFeatherTrash}
+                                alt="Trash"
+                                onClick={() => {
+                                  deleteMssage(msg.id);
+                                }}
+                              />
+                            </span>
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
-                <Paginations
-                  showPerPage={showPerPage}
-                  onPaginationChange={onPaginationChange}
-                  total={message.length}
-                />
               </div>
             </div>
           </section>

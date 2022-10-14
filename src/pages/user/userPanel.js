@@ -65,11 +65,11 @@ const UserPanel = () => {
   const [messages, setMessage] = useState([]);
   const usersCollectionRef = collection(db, "messages");
   useEffect(() => {
-    const getUsers = async () => {
+    const getMessages = async () => {
       const data = await getDocs(usersCollectionRef);
       setMessage(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
     };
-    getUsers();
+    getMessages();
   });
   return (
     <>
