@@ -35,13 +35,12 @@ const AdminHistory = () => {
         icon: "warning",
         showCancelButton: true,
         confirmButtonText: "Yes, delete it!",
-        margin: "5px",
         cancelButtonText: "No, cancel!",
         reverseButtons: true,
       })
       .then(async (result) => {
         if (result.isConfirmed) {
-          const userDoc = doc(db, "messages", id);
+          const userDoc = doc(db, "history", id);
           await deleteDoc(userDoc);
           swalWithBootstrapButtons.fire(
             "Deleted!",
