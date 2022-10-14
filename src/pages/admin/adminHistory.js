@@ -3,8 +3,8 @@ import { IconFeatherTrash } from "../../images";
 import moment from "moment";
 import { Stack, Pagination } from "@mui/material";
 import Swal from "sweetalert2";
-import { db } from "../../FirbaseConfig/Firbase-config";
 import Header from "./components/header";
+import { db } from "../../FirbaseConfig/Firbase-config";
 import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
 
 const AdminHistory = () => {

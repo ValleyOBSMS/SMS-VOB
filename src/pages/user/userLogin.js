@@ -21,7 +21,7 @@ const UserLogin = () => {
       setPasswordError("Password must be contain 8 characters");
       validation = false;
     }
- 
+
     return validation;
   };
   const submit = (e) => {
@@ -32,7 +32,6 @@ const UserLogin = () => {
       signInWithEmailAndPassword(auth, values.email, values.password)
         .then(async (res) => {
           navigate("/user-panel");
-          console.log(res);
         })
         .catch((err) => {
           setEmailError(err.message);

@@ -8,12 +8,23 @@ import Swal from "sweetalert2";
 import { Stack, Pagination } from "@mui/material";
 
 const AdminPanel = () => {
+  const initialText = "Add";
+  const [buttonText, setButtonText] = useState(initialText);
+
+  function handleMessageLoading() {
+    setButtonText("Loading...");
+
+    setTimeout(() => {
+      setButtonText(initialText);
+    }, 2200); // 👈️ change text back after 1 second
+  }
+
   const [values, setValues] = useState({
     email: "",
     password: "",
     message: "",
     backupEmail: "",
-    createdAt: new Date(),
+    createdAt: Date(),
     history: "0 Days",
     role: "",
     ipAddress: "",
@@ -22,9 +33,8 @@ const AdminPanel = () => {
   const [passwordError, setPasswordError] = useState("");
   const [messageError, setMessageError] = useState("");
 
-  
-  const msgsCollectionRef = collection(db, "messages");
   // Function To Add Message
+  const msgsCollectionRef = collection(db, "messages");
   const createMessage = async () => {
     await addDoc(msgsCollectionRef, {
       message: values.message,
@@ -53,27 +63,35 @@ const AdminPanel = () => {
     }
     setMessageError("");
     createMessage();
+    handleMessageLoading();
   };
-  // Function to create user
-  const creatUser = () => {
+  // Function to validate user
+  const validUser = () => {
     let validation = true;
     if (!values.email.includes("@")) {
       setEmailError("Email must be valid format");
       validation = false;
     }
     if (values.password.length > 8 || values.password.length < 8) {
-      setPasswordError("Password must be contains 6 characters");
+      setPasswordError("Password must be contains 8 characters");
       validation = false;
     }
     return validation;
   };
-  const handleUser = (e) => {
+  function handleUserLoading() {
+    setButtonText("Loading...");
+
+    setTimeout(() => {
+      setButtonText(initialText);
+    }, 1600); // 👈️ change text back after 1 second
+  }
+  const handleUser = async (e) => {
     e.preventDefault();
     setEmailError("");
     setPasswordError("");
-    if (creatUser()) {
-      console.log(values.password);
-      axios
+    if (validUser()) {
+      handleUserLoading();
+      await axios
         .post(
           "https://corsproxyapi.herokuapp.com/https://us-central1-sms-vob.cloudfunctions.net/addUser",
           {
@@ -134,17 +152,16 @@ const AdminPanel = () => {
       })
       .then(async (result) => {
         if (result.isConfirmed) {
+          swalWithBootstrapButtons.fire(
+            "Deleted!",
+            "User has been deleted.",
+            "success"
+          );
           axios.post(
             "https://corsproxyapi.herokuapp.com/https://us-central1-sms-vob.cloudfunctions.net/deleteUser",
             {
               id: id,
             }
-          );
-
-          swalWithBootstrapButtons.fire(
-            "Deleted!",
-            "Your file has been deleted.",
-            "success"
           );
         } else if (
           /* Read more about handling dismissals below */
@@ -152,12 +169,13 @@ const AdminPanel = () => {
         ) {
           swalWithBootstrapButtons.fire(
             "Cancelled",
-            "Your imaginary file is safe :)",
+            "User is safe :)",
             "error"
           );
         }
       });
   };
+
   return (
     <>
       <section id="wrapper">
@@ -334,7 +352,7 @@ const AdminPanel = () => {
                   </div>
 
                   <button type="submit" className="custom-btn popSubmit">
-                    Add
+                    {buttonText}
                   </button>
                 </form>
               </section>
@@ -432,7 +450,7 @@ const AdminPanel = () => {
                   </div>
 
                   <button type="submit" className="custom-btn popSubmit">
-                    ADD Message
+                    {buttonText}
                   </button>
                 </form>
               </section>

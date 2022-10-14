@@ -1,9 +1,26 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { IconDownload } from "../../images";
+import { db } from "../../FirbaseConfig/Firbase-config";
+import { collection, getDocs } from "firebase/firestore";
+import moment from "moment";
 
 import Header from "./components/header";
 
 const UserHistory = () => {
+  const [history, setHistory] = useState([]);
+  const historyCollectionRef = collection(db, "history");
+  useEffect(() => {
+    const getHistory = async () => {
+      try {
+        const data = await getDocs(historyCollectionRef);
+        setHistory(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getHistory();
+  });
+
   return (
     <>
       <section id="wrapper">
@@ -33,223 +50,26 @@ const UserHistory = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <td>1</td>
-                      <td>
-                        <span>04-06-2022</span> &nbsp;&nbsp;{" "}
-                        <span>1 14:43:12</span>
-                      </td>
-                      <td>
-                        <a href="/" onClick={(e) => e.preventDefault()}>
-                          macanderson@gmail.com
-                        </a>
-                      </td>
-                      <td>787 787 7878</td>
-                      <td>
-                        Delta Drugs, 2497 E Lakeshore Dr. Lake Elsinore, CA
-                        92530, Phone: (951) 245 9494
-                      </td>
-                      <td className="text-center">
-                        <button className="tb-btn-smpl download">
-                          <span className="icon">
-                            <img src={IconDownload} alt="Download" />
-                          </span>
-                        </button>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>2</td>
-                      <td>
-                        <span>04-06-2022</span> &nbsp;&nbsp;{" "}
-                        <span>1 14:43:12</span>
-                      </td>
-                      <td>
-                        <a href="/" onClick={(e) => e.preventDefault()}>
-                          macanderson@gmail.com
-                        </a>
-                      </td>
-                      <td>787 787 7878</td>
-                      <td>
-                        Delta Drugs, 2497 E Lakeshore Dr. Lake Elsinore, CA
-                        92530, Phone: (951) 245 9494
-                      </td>
-                      <td className="text-center">
-                        <button className="tb-btn-smpl download">
-                          <span className="icon">
-                            <img src={IconDownload} alt="Download" />
-                          </span>
-                        </button>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>3</td>
-                      <td>
-                        <span>04-06-2022</span> &nbsp;&nbsp;{" "}
-                        <span>1 14:43:12</span>
-                      </td>
-                      <td>
-                        <a href="/" onClick={(e) => e.preventDefault()}>
-                          macanderson@gmail.com
-                        </a>
-                      </td>
-                      <td>787 787 7878</td>
-                      <td>
-                        Delta Drugs, 2497 E Lakeshore Dr. Lake Elsinore, CA
-                        92530, Phone: (951) 245 9494
-                      </td>
-                      <td className="text-center">
-                        <button className="tb-btn-smpl download">
-                          <span className="icon">
-                            <img src={IconDownload} alt="Download" />
-                          </span>
-                        </button>
-                      </td>
-                    </tr>
-
-                    <tr>
-                      <td>4</td>
-                      <td>
-                        <span>04-06-2022</span> &nbsp;&nbsp;{" "}
-                        <span>1 14:43:12</span>
-                      </td>
-                      <td>
-                        <a href="/" onClick={(e) => e.preventDefault()}>
-                          macanderson@gmail.com
-                        </a>
-                      </td>
-                      <td>787 787 7878</td>
-                      <td>
-                        Delta Drugs, 2497 E Lakeshore Dr. Lake Elsinore, CA
-                        92530, Phone: (951) 245 9494
-                      </td>
-                      <td className="text-center">
-                        <button className="tb-btn-smpl download">
-                          <span className="icon">
-                            <img src={IconDownload} alt="Download" />
-                          </span>
-                        </button>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>5</td>
-                      <td>
-                        <span>04-06-2022</span> &nbsp;&nbsp;{" "}
-                        <span>1 14:43:12</span>
-                      </td>
-                      <td>
-                        <a href="/" onClick={(e) => e.preventDefault()}>
-                          macanderson@gmail.com
-                        </a>
-                      </td>
-                      <td>787 787 7878</td>
-                      <td>
-                        Delta Drugs, 2497 E Lakeshore Dr. Lake Elsinore, CA
-                        92530, Phone: (951) 245 9494
-                      </td>
-                      <td className="text-center">
-                        <button className="tb-btn-smpl download">
-                          <span className="icon">
-                            <img src={IconDownload} alt="Download" />
-                          </span>
-                        </button>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>6</td>
-                      <td>
-                        <span>04-06-2022</span> &nbsp;&nbsp;{" "}
-                        <span>1 14:43:12</span>
-                      </td>
-                      <td>
-                        <a href="/" onClick={(e) => e.preventDefault()}>
-                          macanderson@gmail.com
-                        </a>
-                      </td>
-                      <td>787 787 7878</td>
-                      <td>
-                        Delta Drugs, 2497 E Lakeshore Dr. Lake Elsinore, CA
-                        92530, Phone: (951) 245 9494
-                      </td>
-                      <td className="text-center">
-                        <button className="tb-btn-smpl download">
-                          <span className="icon">
-                            <img src={IconDownload} alt="Download" />
-                          </span>
-                        </button>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>7</td>
-                      <td>
-                        <span>04-06-2022</span> &nbsp;&nbsp;{" "}
-                        <span>1 14:43:12</span>
-                      </td>
-                      <td>
-                        <a href="/" onClick={(e) => e.preventDefault()}>
-                          macanderson@gmail.com
-                        </a>
-                      </td>
-                      <td>787 787 7878</td>
-                      <td>
-                        Delta Drugs, 2497 E Lakeshore Dr. Lake Elsinore, CA
-                        92530, Phone: (951) 245 9494
-                      </td>
-                      <td className="text-center">
-                        <button className="tb-btn-smpl download">
-                          <span className="icon">
-                            <img src={IconDownload} alt="Download" />
-                          </span>
-                        </button>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>8</td>
-                      <td>
-                        <span>04-06-2022</span> &nbsp;&nbsp;{" "}
-                        <span>1 14:43:12</span>
-                      </td>
-                      <td>
-                        <a href="/" onClick={(e) => e.preventDefault()}>
-                          macanderson@gmail.com
-                        </a>
-                      </td>
-                      <td>787 787 7878</td>
-                      <td>
-                        Delta Drugs, 2497 E Lakeshore Dr. Lake Elsinore, CA
-                        92530, Phone: (951) 245 9494
-                      </td>
-                      <td className="text-center">
-                        <button className="tb-btn-smpl download">
-                          <span className="icon">
-                            <img src={IconDownload} alt="Download" />
-                          </span>
-                        </button>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>9</td>
-                      <td>
-                        <span>04-06-2022</span> &nbsp;&nbsp;{" "}
-                        <span>1 14:43:12</span>
-                      </td>
-                      <td>
-                        <a href="/" onClick={(e) => e.preventDefault()}>
-                          macanderson@gmail.com
-                        </a>
-                      </td>
-                      <td>787 787 7878</td>
-                      <td>
-                        Delta Drugs, 2497 E Lakeshore Dr. Lake Elsinore, CA
-                        92530, Phone: (951) 245 9494
-                      </td>
-                      <td className="text-center">
-                        <button className="tb-btn-smpl download">
-                          <span className="icon">
-                            <img src={IconDownload} alt="Download" />
-                          </span>
-                        </button>
-                      </td>
-                    </tr>
+                    {history.map((hist, index) => (
+                      <tr key={index}>
+                        <td>{index + 1}</td>
+                        <td>{moment(hist.createdAt).format("DD-MM-YYYY")}</td>
+                        <td>
+                          <a href="/" onClick={(e) => e.preventDefault()}>
+                            {hist.receiverEmail}
+                          </a>
+                        </td>
+                        <td>{hist.receiverPhoneNumber}</td>
+                        <td>{hist.message}</td>
+                        <td className="text-center">
+                          <button className="tb-btn-smpl download">
+                            <span className="icon">
+                              <img src={IconDownload} alt="Download" />
+                            </span>
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>

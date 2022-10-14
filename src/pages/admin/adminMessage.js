@@ -9,18 +9,17 @@ const AdminMessage = () => {
   //  Function for list Messages
 
   const [message, setMessage] = useState([]);
-  const usersCollectionRef = collection(db, "messages");
+  const msgCollectionRef = collection(db, "messages");
 
   useEffect(() => {
     const getMessages = async () => {
-      const data = await getDocs(usersCollectionRef);
+      const data = await getDocs(msgCollectionRef);
       setMessage(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
     };
     getMessages();
   });
 
   //  Function for deltese messages
-
   const deleteMssage = async (id) => {
     const swalWithBootstrapButtons = Swal.mixin({
       customClass: {
@@ -44,20 +43,20 @@ const AdminMessage = () => {
       })
       .then(async (result) => {
         if (result.isConfirmed) {
-          const userDoc = doc(db, "messages", id);
-          await deleteDoc(userDoc);
+          const msgDoc = doc(db, "messages", id);
           swalWithBootstrapButtons.fire(
             "Deleted!",
-            "Your file has been deleted.",
+            "Your message has been deleted.",
             "success"
           );
+          await deleteDoc(msgDoc);
         } else if (
           /* Read more about handling dismissals below */
           result.dismiss === Swal.DismissReason.cancel
         ) {
           swalWithBootstrapButtons.fire(
             "Cancelled",
-            "Your imaginary file is safe :)",
+            "Your message is safe :)",
             "error"
           );
         }
@@ -84,7 +83,7 @@ const AdminMessage = () => {
                   <tbody>
                     {message.map((msg, index) => (
                       <tr key={index}>
-                        <td>{moment(msg.createdAt).format("DD-MM-YYYY")}</td>
+                        <td>{moment(msg.createdAt).format("LLLL")}</td>
                         <td>{msg.message}</td>
                         <td className="text-center">
                           <button className="tb-btn-smpl delete text-center">
