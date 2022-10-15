@@ -10,8 +10,21 @@ import {
   shareClockBlue,
   Logout,
 } from "../../../images";
-
+import { auth } from "../../../FirbaseConfig/Firbase-config";
+import { useNavigate } from "react-router-dom";
+import { signOut } from "firebase/auth";
 const Header = () => {
+  const navigate = useNavigate();
+  const signOutAdmin = () => {
+    signOut(auth)
+      .then(() => {
+        localStorage.removeItem("valleyobsmsuser");
+        navigate("/admin-login");
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
   return (
     <>
       <header className="site-header">
@@ -71,11 +84,13 @@ const Header = () => {
                 </Link>
               </li>
               <li>
-                <Link>
-                  <span className="icon">
-                    <img src={Logout} alt="LogOut" />
-                  </span>
-                </Link>
+                <span className="icon">
+                  <img
+                    src={Logout}
+                    alt="LogOut"
+                    onClick={() => signOutAdmin()}
+                  />
+                </span>
               </li>
             </ul>
           </nav>

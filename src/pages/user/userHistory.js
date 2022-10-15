@@ -8,8 +8,8 @@ import Header from "./components/header";
 
 const UserHistory = () => {
   const [history, setHistory] = useState([]);
-  const historyCollectionRef = collection(db, "history");
   useEffect(() => {
+    const historyCollectionRef = collection(db, "history");
     const getHistory = async () => {
       try {
         const data = await getDocs(historyCollectionRef);
@@ -19,7 +19,7 @@ const UserHistory = () => {
       }
     };
     getHistory();
-  });
+  }, []);
 
   return (
     <>

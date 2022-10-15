@@ -9,15 +9,15 @@ const AdminMessage = () => {
   //  Function for list Messages
 
   const [message, setMessage] = useState([]);
-  const msgCollectionRef = collection(db, "messages");
 
   useEffect(() => {
+    const msgCollectionRef = collection(db, "messages");
     const getMessages = async () => {
       const data = await getDocs(msgCollectionRef);
       setMessage(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
     };
     getMessages();
-  });
+  }, []);
 
   //  Function for deltese messages
   const deleteMssage = async (id) => {

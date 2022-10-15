@@ -110,8 +110,8 @@ const AdminPanel = () => {
             timer: 1500,
           });
         })
-        .catch(() => {
-          setEmailError("User Already exist");
+        .catch((err) => {
+          setEmailError(err.message);
         });
     }
   };

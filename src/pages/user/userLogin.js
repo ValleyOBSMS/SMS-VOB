@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Logo } from "../../images";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../../FirbaseConfig/Firbase-config";
+import { auth, db } from "../../FirbaseConfig/Firbase-config";
+import { getDoc, doc } from "firebase/firestore";
 const UserLogin = () => {
   const navigate = useNavigate();
   const [values, setValues] = useState({
@@ -31,7 +32,26 @@ const UserLogin = () => {
     if (handleSubmit()) {
       signInWithEmailAndPassword(auth, values.email, values.password)
         .then(async (res) => {
-          navigate("/user-panel");
+          const docRef = doc(db, "users", res.user.uid);
+          const docSnap = await getDoc(docRef);
+          const docRefSetting = doc(db, "settings", "dpLdWVS86Mn4XLr3IQkq");
+          const docSetting = await getDoc(docRefSetting);
+
+          localStorage.setItem(
+            "valleyobsmsuser",
+            JSON.stringify({
+              ...docSnap.data(),
+              settingId: docSetting.data().id,
+              ...docSetting.data(),
+
+              userId: docSnap.data().id,
+            })
+          );
+          if (docSnap.data().role === "user") {
+            console.log(docSnap.data());
+            navigate("/user-panel");
+            window.location.reload();
+          }
         })
         .catch((err) => {
           setEmailError(err.message);

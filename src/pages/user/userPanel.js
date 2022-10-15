@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Header from "./components/header";
-import { collection, getDocs, orderBy, query } from "firebase/firestore";
+import { collection, getDocs } from "firebase/firestore";
 import { db } from "../../FirbaseConfig/Firbase-config";
 import axios from "axios";
 import { Swal } from "sweetalert2";
@@ -63,15 +63,14 @@ const UserPanel = () => {
   };
   // Fetch messages
   const [messages, setMessage] = useState([]);
-  const usersCollectionRef = collection(db, "messages");
-  const q = query(usersCollectionRef, orderBy("createdAt"));
   useEffect(() => {
+    const usersCollectionRef = collection(db, "messages");
     const getMessages = async () => {
-      const data = await getDocs(usersCollectionRef, q);
+      const data = await getDocs(usersCollectionRef);
       setMessage(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
     };
     getMessages();
-  });
+  }, []);
   return (
     <>
       <link
