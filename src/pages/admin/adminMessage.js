@@ -5,16 +5,21 @@ import { db } from "../../FirbaseConfig/Firbase-config";
 import Header from "./components/header";
 import moment from "moment";
 import Swal from "sweetalert2";
+import CircularProgress from "@mui/material/CircularProgress";
+import Box from "@mui/material/Box";
 const AdminMessage = () => {
   //  Function for list Messages
 
   const [message, setMessage] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const msgCollectionRef = collection(db, "messages");
     const getMessages = async () => {
+      setLoading(true);
       const data = await getDocs(msgCollectionRef);
       setMessage(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+      setLoading(false);
     };
     getMessages();
   }, []);
@@ -44,12 +49,12 @@ const AdminMessage = () => {
       .then(async (result) => {
         if (result.isConfirmed) {
           const msgDoc = doc(db, "messages", id);
+          await deleteDoc(msgDoc);
           swalWithBootstrapButtons.fire(
             "Deleted!",
             "Your message has been deleted.",
             "success"
           );
-          await deleteDoc(msgDoc);
         } else if (
           /* Read more about handling dismissals below */
           result.dismiss === Swal.DismissReason.cancel
@@ -81,25 +86,38 @@ const AdminMessage = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {message.map((msg, index) => (
-                      <tr key={index}>
-                        <td>{moment(msg.createdAt).format("LLLL")}</td>
-                        <td>{msg.message}</td>
-                        <td className="text-center">
-                          <button className="tb-btn-smpl delete text-center">
-                            <span className="icon">
-                              <img
-                                src={IconFeatherTrash}
-                                alt="Trash"
-                                onClick={() => {
-                                  deleteMssage(msg.id);
-                                }}
-                              />
-                            </span>
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
+                    {loading ? (
+                      <Box
+                        sx={{
+                          display: "block",
+                          alignItem: "center",
+                          justifyContent: "center",
+                          color: "inherit",
+                        }}
+                      >
+                        <CircularProgress />
+                      </Box>
+                    ) : (
+                      message.map((msg, index) => (
+                        <tr key={index}>
+                          <td>{moment(msg.createdAt).format("DD-MM-YYYY")}</td>
+                          <td>{msg.message}</td>
+                          <td className="text-center">
+                            <button className="tb-btn-smpl delete text-center">
+                              <span className="icon">
+                                <img
+                                  src={IconFeatherTrash}
+                                  alt="Trash"
+                                  onClick={() => {
+                                    deleteMssage(msg.id);
+                                  }}
+                                />
+                              </span>
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    )}
                   </tbody>
                 </table>
               </div>

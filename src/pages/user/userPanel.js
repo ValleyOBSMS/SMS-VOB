@@ -6,6 +6,8 @@ import axios from "axios";
 import { Swal } from "sweetalert2";
 
 const UserPanel = () => {
+
+  
   const [values, setValues] = useState({
     email: "",
     number: "",
@@ -97,6 +99,7 @@ const UserPanel = () => {
                           ...prev,
                           selectMessage: event.target.value,
                         }));
+                        console.log(event.target.value);
                       }}
                     >
                       <option value="">Select a Message...</option>

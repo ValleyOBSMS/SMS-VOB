@@ -3,17 +3,22 @@ import { IconDownload } from "../../images";
 import { db } from "../../FirbaseConfig/Firbase-config";
 import { collection, getDocs } from "firebase/firestore";
 import moment from "moment";
-
+import CircularProgress from "@mui/material/CircularProgress";
+import Box from "@mui/material/Box";
 import Header from "./components/header";
 
 const UserHistory = () => {
+  const [loading, setLoading] = useState(false);
+
   const [history, setHistory] = useState([]);
   useEffect(() => {
     const historyCollectionRef = collection(db, "history");
     const getHistory = async () => {
       try {
+        setLoading(true);
         const data = await getDocs(historyCollectionRef);
         setHistory(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+        setLoading(false);
       } catch (error) {
         console.log(error);
       }
@@ -50,26 +55,38 @@ const UserHistory = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {history.map((hist, index) => (
-                      <tr key={index}>
-                        <td>{index + 1}</td>
-                        <td>{moment(hist.createdAt).format("DD-MM-YYYY")}</td>
-                        <td>
-                          <a href="/" onClick={(e) => e.preventDefault()}>
-                            {hist.receiverEmail}
-                          </a>
-                        </td>
-                        <td>{hist.receiverPhoneNumber}</td>
-                        <td>{hist.message}</td>
-                        <td className="text-center">
-                          <button className="tb-btn-smpl download">
-                            <span className="icon">
-                              <img src={IconDownload} alt="Download" />
-                            </span>
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
+                    {loading ? (
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "center",
+                          color: "inherit",
+                        }}
+                      >
+                        <CircularProgress />
+                      </Box>
+                    ) : (
+                      history.map((hist, index) => (
+                        <tr key={index}>
+                          <td>{index + 1}</td>
+                          <td>{moment(hist.createdAt).format("DD-MM-YYYY")}</td>
+                          <td>
+                            <a href="/" onClick={(e) => e.preventDefault()}>
+                              {hist.receiverEmail}
+                            </a>
+                          </td>
+                          <td>{hist.receiverPhoneNumber}</td>
+                          <td>{hist.message}</td>
+                          <td className="text-center">
+                            <button className="tb-btn-smpl download">
+                              <span className="icon">
+                                <img src={IconDownload} alt="Download" />
+                              </span>
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    )}
                   </tbody>
                 </table>
               </div>

@@ -6,18 +6,10 @@ import { db } from "../../FirbaseConfig/Firbase-config";
 import Header from "./components/header";
 import Swal from "sweetalert2";
 import { Stack, Pagination } from "@mui/material";
-
+import CircularProgress from "@mui/material/CircularProgress";
+import Box from "@mui/material/Box";
 const AdminPanel = () => {
-  const initialText = "Add";
-  const [buttonText, setButtonText] = useState(initialText);
-
-  function handleMessageLoading() {
-    setButtonText("Loading...");
-
-    setTimeout(() => {
-      setButtonText(initialText);
-    }, 2200); // 👈️ change text back after 1 second
-  }
+  const [loading, setLoading] = useState(false);
 
   const [values, setValues] = useState({
     email: "",
@@ -34,8 +26,9 @@ const AdminPanel = () => {
   const [messageError, setMessageError] = useState("");
 
   // Function To Add Message
-  const msgsCollectionRef = collection(db, "messages");
   const createMessage = async () => {
+    setLoading(true);
+    const msgsCollectionRef = collection(db, "messages");
     await addDoc(msgsCollectionRef, {
       message: values.message,
       createdAt: new Date(),
@@ -44,14 +37,15 @@ const AdminPanel = () => {
         Swal.fire({
           position: "center",
           icon: "success",
-          title: "Your message has been added",
+          title: "New User has been added",
           showConfirmButton: false,
-          timer: 1500,
+          timer: 1200,
         });
       })
       .catch((err) => {
         console.log(err);
       });
+    setLoading(false);
   };
   const handleMessage = (e) => {
     e.preventDefault();
@@ -63,7 +57,6 @@ const AdminPanel = () => {
     }
     setMessageError("");
     createMessage();
-    handleMessageLoading();
   };
   // Function to validate user
   const validUser = () => {
@@ -78,19 +71,13 @@ const AdminPanel = () => {
     }
     return validation;
   };
-  function handleUserLoading() {
-    setButtonText("Loading...");
 
-    setTimeout(() => {
-      setButtonText(initialText);
-    }, 1600); // 👈️ change text back after 1 second
-  }
   const handleUser = async (e) => {
+    setLoading(true);
     e.preventDefault();
     setEmailError("");
     setPasswordError("");
     if (validUser()) {
-      handleUserLoading();
       await axios
         .post(
           "https://corsproxyapi.herokuapp.com/https://us-central1-sms-vob.cloudfunctions.net/addUser",
@@ -107,26 +94,29 @@ const AdminPanel = () => {
             icon: "success",
             title: "New User has been added",
             showConfirmButton: false,
-            timer: 1500,
+            timer: 1200,
           });
         })
         .catch((err) => {
           setEmailError(err.message);
         });
+      setLoading(false);
     }
   };
   // Function to Display user
 
   const [users, setUsers] = useState([]);
-  const usersCollectionRef = collection(db, "users");
 
   useEffect(() => {
+    const usersCollectionRef = collection(db, "users");
     const getUsers = async () => {
+      setLoading(true);
       const data = await getDocs(usersCollectionRef);
       setUsers(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+      setLoading(false);
     };
     getUsers();
-  });
+  }, []);
 
   // Function to Delete user
 
@@ -152,16 +142,16 @@ const AdminPanel = () => {
       })
       .then(async (result) => {
         if (result.isConfirmed) {
-          swalWithBootstrapButtons.fire(
-            "Deleted!",
-            "User has been deleted.",
-            "success"
-          );
-          axios.post(
+          await axios.post(
             "https://corsproxyapi.herokuapp.com/https://us-central1-sms-vob.cloudfunctions.net/deleteUser",
             {
               id: id,
             }
+          );
+          swalWithBootstrapButtons.fire(
+            "Deleted!",
+            "User has been deleted.",
+            "success"
           );
         } else if (
           /* Read more about handling dismissals below */
@@ -220,26 +210,38 @@ const AdminPanel = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {users.map((user, index) => (
-                      <tr key={index}>
-                        <td>{user.email}</td>
-                        <td>{user.password}</td>
-                        <td>{user.history}</td>
-                        <td className="text-center">
-                          <button className="tb-btn-smpl delete text-center">
-                            <span className="icon">
-                              <img
-                                src={IconFeatherTrash}
-                                alt="Trash"
-                                onClick={() => {
-                                  deleteUser(user.id);
-                                }}
-                              />
-                            </span>
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
+                    {loading ? (
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "center",
+                          color: "inherit",
+                        }}
+                      >
+                        <CircularProgress />
+                      </Box>
+                    ) : (
+                      users.map((user, index) => (
+                        <tr key={index}>
+                          <td>{user.email}</td>
+                          <td>{user.password}</td>
+                          <td>{user.history}</td>
+                          <td className="text-center">
+                            <button className="tb-btn-smpl delete text-center">
+                              <span className="icon">
+                                <img
+                                  src={IconFeatherTrash}
+                                  alt="Trash"
+                                  onClick={() => {
+                                    deleteUser(user.id);
+                                  }}
+                                />
+                              </span>
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    )}
                   </tbody>
                 </table>
                 <Stack spacing={2}>
@@ -276,7 +278,7 @@ const AdminPanel = () => {
                   <div className="mdl-input-bx">
                     <label>Email</label>
                     <input
-                      type="email"
+                      type="text"
                       name="email"
                       id="email"
                       className="form-control"
@@ -352,7 +354,20 @@ const AdminPanel = () => {
                   </div>
 
                   <button type="submit" className="custom-btn popSubmit">
-                    {buttonText}
+                    {" "}
+                    {loading ? (
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "center",
+                          color: "inherit",
+                        }}
+                      >
+                        <CircularProgress />
+                      </Box>
+                    ) : (
+                      "Add User"
+                    )}
                   </button>
                 </form>
               </section>
@@ -449,8 +464,24 @@ const AdminPanel = () => {
                     <p className="text-danger">{messageError}</p>
                   </div>
 
-                  <button type="submit" className="custom-btn popSubmit">
-                    {buttonText}
+                  <button
+                    type="submit"
+                    className="custom-btn popSubmit"
+                    disabled={loading ? true : false}
+                  >
+                    {loading ? (
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "center",
+                          color: "inherit",
+                        }}
+                      >
+                        <CircularProgress />
+                      </Box>
+                    ) : (
+                      "Add Message"
+                    )}
                   </button>
                 </form>
               </section>

@@ -6,14 +6,19 @@ import Swal from "sweetalert2";
 import Header from "./components/header";
 import { db } from "../../FirbaseConfig/Firbase-config";
 import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
-
+import CircularProgress from "@mui/material/CircularProgress";
+import Box from "@mui/material/Box";
 const AdminHistory = () => {
+  const [loading, setLoading] = useState(false);
+
   const [history, setHistory] = useState([]);
   useEffect(() => {
     const historyCollectionRef = collection(db, "history");
     const getHistory = async () => {
+      setLoading(true);
       const data = await getDocs(historyCollectionRef);
       setHistory(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+      setLoading(false);
     };
     getHistory();
   }, []);
@@ -104,28 +109,40 @@ const AdminHistory = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {history.map((hist, index) => (
-                      <tr key={index}>
-                        <td>{index + 1}</td>
-                        <td>{moment(hist.createdAt).format("DD-MM-YYYY")}</td>
-                        <td>{hist.receiverEmail}</td>
-                        <td>{hist.receiverPhoneNumber}</td>
-                        <td>{hist.message}</td>
-                        <td className="text-center">
-                          <button className="tb-btn-smpl delete text-center">
-                            <span className="icon">
-                              <img
-                                src={IconFeatherTrash}
-                                alt="Trash"
-                                onClick={() => {
-                                  deleteHistory(hist.id);
-                                }}
-                              />
-                            </span>
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
+                    {loading ? (
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "center",
+                          color: "inherit",
+                        }}
+                      >
+                        <CircularProgress />
+                      </Box>
+                    ) : (
+                      history.map((hist, index) => (
+                        <tr key={index}>
+                          <td>{index + 1}</td>
+                          <td>{moment(hist.createdAt).format("DD-MM-YYYY")}</td>
+                          <td>{hist.receiverEmail}</td>
+                          <td>{hist.receiverPhoneNumber}</td>
+                          <td>{hist.message}</td>
+                          <td className="text-center">
+                            <button className="tb-btn-smpl delete text-center">
+                              <span className="icon">
+                                <img
+                                  src={IconFeatherTrash}
+                                  alt="Trash"
+                                  onClick={() => {
+                                    deleteHistory(hist.id);
+                                  }}
+                                />
+                              </span>
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    )}
                   </tbody>
                 </table>
                 <Stack spacing={2}>
