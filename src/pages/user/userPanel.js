@@ -4,6 +4,7 @@ import { collection, doc, getDoc, getDocs } from "firebase/firestore";
 import { db } from "../../FirbaseConfig/Firbase-config";
 import axios from "axios";
 import Swal from "sweetalert2";
+import { CircularProgress } from "@mui/material";
 const localUser = localStorage.getItem("valleyobsmsuser");
 const UserPanel = () => {
   const [values, setValues] = useState({
@@ -72,6 +73,7 @@ const UserPanel = () => {
         });
         setLoading(false);
       } catch (error) {
+        setLoading(false);
         Swal.fire({
           position: "center",
           icon: "error",
@@ -192,14 +194,18 @@ const UserPanel = () => {
                   </div>
                 </div>
 
-                <button
-                  type="submit"
-                  className="custom-btn text-uppercase"
-                  style={{ minWidth: "180px" }}
-                  onClick={() => submit()}
-                >
-                  Send
-                </button>
+                {loading ? (
+                  <CircularProgress size="1rem" />
+                ) : (
+                  <button
+                    type="submit"
+                    className="custom-btn text-uppercase"
+                    style={{ minWidth: "180px" }}
+                    onClick={() => submit()}
+                  >
+                    Send
+                  </button>
+                )}
               </div>
             </div>
           </section>
