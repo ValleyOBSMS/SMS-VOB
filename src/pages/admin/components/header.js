@@ -13,16 +13,40 @@ import {
 import { auth } from "../../../FirbaseConfig/Firbase-config";
 import { useNavigate } from "react-router-dom";
 import { signOut } from "firebase/auth";
+import Swal from "sweetalert2";
 const Header = () => {
   const navigate = useNavigate();
   const signOutAdmin = () => {
-    signOut(auth)
-      .then(() => {
-        localStorage.removeItem("valleyobsmsuser");
-        navigate("/admin-login");
+    const swalWithBootstrapButtons = Swal.mixin({
+      customClass: {
+        confirmButton: "btn btn-success ",
+        cancelButton: "btn btn-danger order-1 left-gap",
+        marginRight: "2px",
+      },
+      buttonsStyling: false,
+    });
+
+    swalWithBootstrapButtons
+      .fire({
+        title: "Are you sure? want to logout",
+        text: "",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Yes, logout!",
+        cancelButtonText: "No, cancel!",
+        reverseButtons: true,
       })
-      .catch((error) => {
-        console.log(error);
+      .then(async (result) => {
+        if (result.isConfirmed) {
+          signOut(auth)
+            .then(() => {
+              localStorage.removeItem("valleyobsmsuser");
+              navigate("/admin-login");
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        }
       });
   };
   return (
@@ -84,7 +108,7 @@ const Header = () => {
                 </Link>
               </li>
               <li>
-                <span className="icon">
+                <span className="icon" style={{ cursor: "pointer" }}>
                   <img
                     src={Logout}
                     alt="LogOut"

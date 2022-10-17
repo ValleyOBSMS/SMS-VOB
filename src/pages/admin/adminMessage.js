@@ -1,12 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { IconFeatherTrash } from "../../images";
-import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  deleteDoc,
+  doc,
+  orderBy,
+  query,
+} from "firebase/firestore";
 import { db } from "../../FirbaseConfig/Firbase-config";
 import Header from "./components/header";
 import moment from "moment";
 import Swal from "sweetalert2";
 import CircularProgress from "@mui/material/CircularProgress";
 import Box from "@mui/material/Box";
+import { Stack, TablePagination } from "@mui/material";
 const AdminMessage = () => {
   //  Function for list Messages
 
@@ -15,9 +23,11 @@ const AdminMessage = () => {
 
   useEffect(() => {
     const msgCollectionRef = collection(db, "messages");
+    const q = query(msgCollectionRef, orderBy("createdAt", "desc"));
+
     const getMessages = async () => {
       setLoading(true);
-      const data = await getDocs(msgCollectionRef);
+      const data = await getDocs(q);
       setMessage(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
       setLoading(false);
     };
@@ -55,17 +65,22 @@ const AdminMessage = () => {
             "Your message has been deleted.",
             "success"
           );
-        } else if (
-          /* Read more about handling dismissals below */
-          result.dismiss === Swal.DismissReason.cancel
-        ) {
-          swalWithBootstrapButtons.fire(
-            "Cancelled",
-            "Your message is safe :)",
-            "error"
-          );
+          window.location.reload();
         }
       });
+  };
+
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [page, setPage] = React.useState(0);
+
+  // Pagination fucntions
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
   };
 
   return (
@@ -87,39 +102,50 @@ const AdminMessage = () => {
                   </thead>
                   <tbody>
                     {loading ? (
-                      <Box
-                        sx={{
-                          display: "block",
-                          alignItem: "center",
-                          justifyContent: "center",
-                          color: "inherit",
-                        }}
-                      >
-                        <CircularProgress />
-                      </Box>
+                      <CircularProgress size="1rem" />
                     ) : (
-                      message.map((msg, index) => (
-                        <tr key={index}>
-                          <td>{moment(msg.createdAt).format("DD-MM-YYYY")}</td>
-                          <td>{msg.message}</td>
-                          <td className="text-center">
-                            <button className="tb-btn-smpl delete text-center">
-                              <span className="icon">
-                                <img
-                                  src={IconFeatherTrash}
-                                  alt="Trash"
-                                  onClick={() => {
-                                    deleteMssage(msg.id);
-                                  }}
-                                />
-                              </span>
-                            </button>
-                          </td>
-                        </tr>
-                      ))
+                      message
+                        .slice(
+                          page * rowsPerPage,
+                          page * rowsPerPage + rowsPerPage
+                        )
+                        .map((msg, index) => (
+                          <tr key={index}>
+                            <td>
+                              {moment(
+                                new Date(msg.createdAt.seconds * 1000)
+                              ).format("DD-MM-YYYY")}
+                            </td>
+                            <td>{msg.message}</td>
+                            <td className="text-center">
+                              <button className="tb-btn-smpl delete text-center">
+                                <span className="icon">
+                                  <img
+                                    src={IconFeatherTrash}
+                                    alt="Trash"
+                                    onClick={() => {
+                                      deleteMssage(msg.id);
+                                    }}
+                                  />
+                                </span>
+                              </button>
+                            </td>
+                          </tr>
+                        ))
                     )}
                   </tbody>
                 </table>
+                <Stack spacing={2}>
+                  <TablePagination
+                    rowsPerPageOptions={[5, 10, 25]}
+                    component="div"
+                    count={message.length}
+                    rowsPerPage={rowsPerPage}
+                    page={page}
+                    onPageChange={handleChangePage}
+                    onRowsPerPageChange={handleChangeRowsPerPage}
+                  />
+                </Stack>
               </div>
             </div>
           </section>

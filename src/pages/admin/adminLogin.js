@@ -1,9 +1,15 @@
 import { Logo } from "../../images";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import {
+  sendPasswordResetEmail,
+  signInWithEmailAndPassword,
+  signOut,
+} from "firebase/auth";
 import { auth, db } from "../../FirbaseConfig/Firbase-config";
 import { getDoc, doc } from "firebase/firestore";
+import Swal from "sweetalert2";
+import { CircularProgress } from "@mui/material";
 
 const AdminLogin = () => {
   const navigate = useNavigate();
@@ -13,13 +19,14 @@ const AdminLogin = () => {
   });
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
+  const [loading, setLoading] = useState(false);
   const handleSubmit = () => {
     let validation = true;
     if (!values.email.includes("@")) {
       setEmailError("Email must be valid form");
       validation = false;
     }
-    if (values.password.length < 8 || values.password.length > 8) {
+    if (values.password.length < 8) {
       setPasswordError("Password must be contain 8 characters");
       validation = false;
     }
@@ -31,31 +38,73 @@ const AdminLogin = () => {
     setPasswordError("");
     setEmailError("");
     if (handleSubmit()) {
+      setLoading(true);
       signInWithEmailAndPassword(auth, values.email, values.password)
         .then(async (res) => {
           const docRef = doc(db, "users", res.user.uid);
           const docSnap = await getDoc(docRef);
           const docRefSetting = doc(db, "settings", "dpLdWVS86Mn4XLr3IQkq");
           const docSetting = await getDoc(docRefSetting);
-          localStorage.setItem(
-            "valleyobsmsuser",
-            JSON.stringify({
-              ...docSnap.data(),
-              settingId: docSetting.data().id,
-              ...docSetting.data(),
 
-              userId: docSnap.data().id,
-            })
-          );
           if (docSnap.data().role === "admin") {
+            localStorage.setItem(
+              "valleyobsmsuser",
+              JSON.stringify({
+                ...docSnap.data(),
+                password: "",
+                settingId: docSetting.data().id,
+                ...docSetting.data(),
+
+                userId: docSnap.data().id,
+              })
+            );
+            setLoading(false);
             navigate("/admin-panel");
-            window.location.reload();
+            return window.location.reload();
           }
+          setLoading(false);
+          signOut(auth);
+          Swal.fire({
+            position: "center",
+            icon: "error",
+            title: "User not found",
+            showConfirmButton: false,
+            timer: 1200,
+          });
         })
         .catch((err) => {
-          setEmailError(err.message);
+          setLoading(false);
+          Swal.fire({
+            position: "center",
+            icon: "error",
+            title: err.message,
+            showConfirmButton: false,
+            timer: 1200,
+          });
         });
     }
+  };
+
+  const passwordReset = () => {
+    sendPasswordResetEmail(auth, "valleyobsms@gmail.com")
+      .then(() => {
+        Swal.fire({
+          position: "center",
+          icon: "success",
+          title: "Password reset email sent",
+          showConfirmButton: false,
+          timer: 1200,
+        });
+      })
+      .catch((error) => {
+        Swal.fire({
+          position: "center",
+          icon: "error",
+          title: error.message,
+          showConfirmButton: false,
+          timer: 1200,
+        });
+      });
   };
   return (
     <>
@@ -110,15 +159,17 @@ const AdminLogin = () => {
                   </div>
 
                   <div className="text-end my-4">
-                    <a href="/" onClick={(e) => e.preventDefault()}>
-                      Forgot Password
-                    </a>
+                    <a onClick={(e) => passwordReset()}>Forgot Password</a>
                   </div>
 
                   <div className="submit mt-4">
-                    <button type="submit" className="custom-btn round-btn">
-                      Login
-                    </button>
+                    {loading ? (
+                      <CircularProgress size="1rem" />
+                    ) : (
+                      <button type="submit" className="custom-btn round-btn">
+                        Login
+                      </button>
+                    )}
                   </div>
                 </form>
               </section>

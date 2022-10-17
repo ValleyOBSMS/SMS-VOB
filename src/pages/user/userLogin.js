@@ -4,6 +4,8 @@ import { Logo } from "../../images";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth, db } from "../../FirbaseConfig/Firbase-config";
 import { getDoc, doc } from "firebase/firestore";
+import Swal from "sweetalert2";
+import { CircularProgress } from "@mui/material";
 const UserLogin = () => {
   const navigate = useNavigate();
   const [values, setValues] = useState({
@@ -12,13 +14,16 @@ const UserLogin = () => {
   });
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
+
+  const [loading, setLoading] = useState(false);
+
   const handleSubmit = () => {
     let validation = true;
     if (!values.email.includes("@")) {
       setEmailError("Email must be valid form");
       validation = false;
     }
-    if (values.password.length < 8 || values.password.length > 8) {
+    if (values.password.length < 8) {
       setPasswordError("Password must be contain 8 characters");
       validation = false;
     }
@@ -30,6 +35,7 @@ const UserLogin = () => {
     setPasswordError("");
     setEmailError("");
     if (handleSubmit()) {
+      setLoading(true);
       signInWithEmailAndPassword(auth, values.email, values.password)
         .then(async (res) => {
           const docRef = doc(db, "users", res.user.uid);
@@ -37,24 +43,39 @@ const UserLogin = () => {
           const docRefSetting = doc(db, "settings", "dpLdWVS86Mn4XLr3IQkq");
           const docSetting = await getDoc(docRefSetting);
 
-          localStorage.setItem(
-            "valleyobsmsuser",
-            JSON.stringify({
-              ...docSnap.data(),
-              settingId: docSetting.data().id,
-              ...docSetting.data(),
-
-              userId: docSnap.data().id,
-            })
-          );
           if (docSnap.data().role === "user") {
-            console.log(docSnap.data());
+            localStorage.setItem(
+              "valleyobsmsuser",
+              JSON.stringify({
+                ...docSnap.data(),
+                password: "",
+                settingId: docSetting.data().id,
+                ...docSetting.data(),
+
+                userId: docSnap.data().id,
+              })
+            );
             navigate("/user-panel");
-            window.location.reload();
+            return window.location.reload();
           }
+          setLoading(false);
+          Swal.fire({
+            position: "center",
+            icon: "error",
+            title: "User not found",
+            showConfirmButton: false,
+            timer: 1200,
+          });
         })
         .catch((err) => {
-          setEmailError(err.message);
+          setLoading(false);
+          Swal.fire({
+            position: "center",
+            icon: "error",
+            title: err.message,
+            showConfirmButton: false,
+            timer: 1200,
+          });
         });
     }
   };
@@ -111,9 +132,13 @@ const UserLogin = () => {
                   </div>
 
                   <div className="submit" style={{ marginTop: "34px" }}>
-                    <button type="submit" className="custom-btn round-btn">
-                      Login
-                    </button>
+                    {loading ? (
+                      <CircularProgress size="1rem" />
+                    ) : (
+                      <button type="submit" className="custom-btn round-btn">
+                        Login
+                      </button>
+                    )}
                   </div>
                 </form>
               </section>

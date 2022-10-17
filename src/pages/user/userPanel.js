@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from "react";
 import Header from "./components/header";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs } from "firebase/firestore";
 import { db } from "../../FirbaseConfig/Firbase-config";
 import axios from "axios";
-import { Swal } from "sweetalert2";
-
+import Swal from "sweetalert2";
+const localUser = localStorage.getItem("valleyobsmsuser");
 const UserPanel = () => {
-
-  
   const [values, setValues] = useState({
     email: "",
     number: "",
@@ -16,50 +14,71 @@ const UserPanel = () => {
   });
   const [emailError, setEmailError] = useState("");
   const [numberError, setNumberError] = useState("");
+  const [settings, setSettings] = useState(JSON.parse(localUser));
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    async function fetchData() {
+      const docRefSetting = doc(db, "settings", "dpLdWVS86Mn4XLr3IQkq");
+      const docSetting = await getDoc(docRefSetting);
+      setSettings(docSetting.data());
+    }
+    fetchData();
+  }, []);
 
   const createMessage = () => {
     let validation = true;
-    if (!values.email.includes("@")) {
-      setEmailError("Email must be in valid format");
-      validation = false;
+    if (!values.email.includes("@") || !values.email) {
+      if (!values.number) {
+        setEmailError("Email must be valid format");
+        validation = false;
+      }
     }
-    if (values.number === "") {
-      setNumberError("Number is required");
+    if (!values.email && !values.number) {
+      setNumberError("Phone number is required");
       validation = false;
     }
     return validation;
   };
-  const submit = () => {
+  const submit = async () => {
     setEmailError("");
     setNumberError("");
     if (createMessage()) {
+      let message = document.getElementById("select-input-message").value;
+      if (!message && message !== "custom") {
+        message = values.customMessage;
+      }
       try {
-        axios
-          .post(
-            "https://corsproxyapi.herokuapp.com/https://us-central1-sms-vob.cloudfunctions.net/sendMessage",
-            {
-              receiverEmail: values.email,
-              receiverPhoneNumber: values.number,
-              message: values.customMessage,
-              userId: "",
-              bbcEmail: "",
-            }
-          )
-          .then((res) => {
-            console.log(res);
-            Swal.fire({
-              position: "center",
-              icon: "success",
-              title: "Message has been sent successfully",
-              showConfirmButton: false,
-              timer: 1500,
-            });
-          })
-          .catch((err) => {
-            console.log(err);
-          });
+        setLoading(true);
+        const data = {
+          receiverEmail: values.email,
+          receiverPhoneNumber: values.number,
+          message,
+          userId: settings?.id,
+          bbcEmail: settings?.backupEmail,
+        };
+
+        await axios.post(
+          "https://corsproxyapi.herokuapp.com/https://us-central1-sms-vob.cloudfunctions.net/sendMessage",
+          data
+        );
+
+        Swal.fire({
+          position: "center",
+          icon: "success",
+          title: "Message has been sent successfully",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+        setLoading(false);
       } catch (error) {
-        console.log(error);
+        Swal.fire({
+          position: "center",
+          icon: "error",
+          title: error.message,
+          showConfirmButton: false,
+          timer: 1500,
+        });
       }
     }
   };
@@ -94,13 +113,6 @@ const UserPanel = () => {
                       name="selectMessage"
                       className="form-control"
                       id="select-input-message"
-                      onChange={(event) => {
-                        setValues((prev) => ({
-                          ...prev,
-                          selectMessage: event.target.value,
-                        }));
-                        console.log(event.target.value);
-                      }}
                     >
                       <option value="">Select a Message...</option>
                       {messages.map((msg, index) => (
@@ -141,7 +153,12 @@ const UserPanel = () => {
                         id="email"
                         className="form-control"
                         autoComplete="off"
-                        placeholder="Copy & paste only"
+                        disabled={settings?.disableEmail ? true : false}
+                        placeholder={
+                          settings?.disableEmail
+                            ? "Email temporary disabled by admin"
+                            : "Copy & paste only"
+                        }
                         onChange={(event) => {
                           setValues((prev) => ({
                             ...prev,
