@@ -49,29 +49,56 @@ const UserHistory = () => {
     setPage(0);
   };
 
-  const downloadPdf = (hist) => {
-    // Landscape export, 2×4 inches
-    const doc = new jsPDF({
-      unit: "in",
-    });
+  var lMargin = 15; //left margin in mm
+  var rMargin = 15; //right margin in mm
+  var pdfInMM = 210; // width of A4 in mm
+  function getPDF(hist) {
+    var doc = new jsPDF("p", "mm", "a4");
 
-    doc.text(
+    const subject = doc.splitTextToSize(
+      "Subject: Valley OBGYN",
+      pdfInMM - lMargin - rMargin
+    );
+
+    const date = doc.splitTextToSize(
       `Date:   ${moment(new Date(hist.createdAt.seconds * 1000)).format(
-        "DD-MM-YYYY"
+        "DD-MM-YYYY HH:mm a"
       )}`,
-      1,
-      1
+      pdfInMM - lMargin - rMargin
     );
-    doc.text(`Email: ${hist.receiverEmail}`, 1, 2);
-    doc.text(`Phone: ${hist.receiverPhoneNumber}`, 1, 3);
-    doc.text(`Message: ${hist.message}`, 1, 4);
 
-    doc.save(
-      `${moment(new Date(hist.createdAt.seconds * 1000)).format(
-        "DD-MM-YYYY"
-      )}-message.pdf`
+    const message = doc.splitTextToSize(
+      hist.message,
+      pdfInMM - lMargin - rMargin
     );
-  };
+
+    const FROM = doc.splitTextToSize(
+      "FROM: Valley OBGYN",
+      pdfInMM - lMargin - rMargin
+    );
+
+    let TO = `${hist.receiverPhoneNumber}, ${hist.receiverEmail}`;
+    if (!hist.receiverPhoneNumber) {
+      TO = hist.receiverEmail;
+    }
+    if (!hist.receiverEmail) {
+      TO = hist.receiverPhoneNumber;
+    }
+
+    const ToText = doc.splitTextToSize(TO, pdfInMM - lMargin - rMargin);
+    const status = doc.splitTextToSize(
+      "Status: Sent",
+      pdfInMM - lMargin - rMargin
+    );
+
+    doc.text(lMargin, 20, subject);
+    doc.text(lMargin, 30, date);
+    doc.text(lMargin, 40, FROM);
+    doc.text(lMargin, 50, ToText);
+    doc.text(lMargin, 70, message);
+    doc.text(lMargin, 110, status);
+    doc.save(`${TO}.pdf`);
+  }
 
   return (
     <>
@@ -124,12 +151,12 @@ const UserHistory = () => {
                               </a>
                             </td>
                             <td>{hist.receiverPhoneNumber}</td>
-                            <td>{hist.message.slice(0,30)}...</td>
+                            <td>{hist.message.slice(0, 30)}...</td>
                             <td className="text-center">
                               <a className="tb-btn-smpl download">
                                 <span
                                   className="icon"
-                                  onClick={() => downloadPdf(hist)}
+                                  onClick={() => getPDF(hist)}
                                 >
                                   <img src={IconDownload} alt="Download" />
                                 </span>

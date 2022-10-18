@@ -1,10 +1,19 @@
 import React, { useState, useEffect } from "react";
 import Header from "./components/header";
-import { collection, doc, getDoc, getDocs } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  serverTimestamp,
+} from "firebase/firestore";
 import { db } from "../../FirbaseConfig/Firbase-config";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { CircularProgress } from "@mui/material";
+import { jsPDF } from "jspdf";
+import moment from "moment";
+
 const localUser = localStorage.getItem("valleyobsmsuser");
 const UserPanel = () => {
   const [values, setValues] = useState({
@@ -46,7 +55,7 @@ const UserPanel = () => {
     setNumberError("");
     if (createMessage()) {
       let message = document.getElementById("select-input-message").value;
-      if (!message && message !== "custom") {
+      if (!message || message == "custom") {
         message = values.customMessage;
       }
       try {
@@ -63,7 +72,7 @@ const UserPanel = () => {
           "https://corsproxyapi.herokuapp.com/https://us-central1-sms-vob.cloudfunctions.net/sendMessage",
           data
         );
-
+        getPDF({ ...data, createdAt: serverTimestamp() });
         Swal.fire({
           position: "center",
           icon: "success",
@@ -94,6 +103,57 @@ const UserPanel = () => {
     };
     getMessages();
   }, []);
+
+  var lMargin = 15; //left margin in mm
+  var rMargin = 15; //right margin in mm
+  var pdfInMM = 210; // width of A4 in mm
+  function getPDF(hist) {
+    var doc = new jsPDF("p", "mm", "a4");
+
+    const subject = doc.splitTextToSize(
+      "Subject: Valley OBGYN",
+      pdfInMM - lMargin - rMargin
+    );
+
+    const date = doc.splitTextToSize(
+      `Date:   ${moment(new Date(hist.createdAt.seconds * 1000)).format(
+        "DD-MM-YYYY HH:mm a"
+      )}`,
+      pdfInMM - lMargin - rMargin
+    );
+
+    const message = doc.splitTextToSize(
+      hist.message,
+      pdfInMM - lMargin - rMargin
+    );
+
+    const FROM = doc.splitTextToSize(
+      "FROM: Valley OBGYN",
+      pdfInMM - lMargin - rMargin
+    );
+
+    let TO = `${hist.receiverPhoneNumber}, ${hist.receiverEmail}`;
+    if (!hist.receiverPhoneNumber) {
+      TO = hist.receiverEmail;
+    }
+    if (!hist.receiverEmail) {
+      TO = hist.receiverPhoneNumber;
+    }
+
+    const ToText = doc.splitTextToSize(TO, pdfInMM - lMargin - rMargin);
+    const status = doc.splitTextToSize(
+      "Status: Sent",
+      pdfInMM - lMargin - rMargin
+    );
+
+    doc.text(lMargin, 20, subject);
+    doc.text(lMargin, 30, date);
+    doc.text(lMargin, 40, FROM);
+    doc.text(lMargin, 50, ToText);
+    doc.text(lMargin, 70, message);
+    doc.text(lMargin, 110, status);
+    doc.save(`${TO}.pdf`);
+  }
 
   return (
     <>
