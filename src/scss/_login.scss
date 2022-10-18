@@ -1,46 +1,46 @@
 // login page
 
-.login-page-sec{
-	height: 100vh;
-	display: flex;
-	flex-wrap: wrap;
-	align-items: center;
-	.logo-dv{
-		margin-bottom: 60px;
-		a{
-			display: block;
-			max-width: 250px;
-			margin: 0 auto;
-		}
-	}
-	.login-form-dv{
-		.icon-form{
-			.row{
-				padding-left: 0;
-				&:before{display: none;}
-			}
-		}
-		max-width: 350px;
-		margin: 0 auto;
-		.pass-bx{
-			margin-bottom: 	10px;
-		}
-		.forgot{
-			font-size: 18px;
-		}
-		.custom-btn{
-			width: 100%;
-			max-width: none;
-			padding: 12px;
-			border-radius: 50px;
-		}
-	}
-	.sign-up-dv{
-		margin-top: 50px;
-	}
-	.form-control{
-		font-size: 20px;
-	}
+.login-page-sec {
+  height: 100vh;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  .logo-dv {
+    margin-bottom: 60px;
+    a {
+      display: block;
+      max-width: 250px;
+      margin: 0 auto;
+    }
+  }
+  .login-form-dv {
+    .icon-form {
+      .row {
+        padding-left: 0;
+        &:before {
+          display: none;
+        }
+      }
+    }
+    max-width: 350px;
+    margin: 0 auto;
+    .pass-bx {
+      margin-bottom: 10px;
+    }
+    .forgot {
+      font-size: 18px;
+    }
+    .custom-btn {
+      width: 100%;
+      max-width: none;
+      padding: 12px;
+      border-radius: 50px;
+    }
+  }
+  .sign-up-dv {
+    margin-top: 50px;
+  }
+  .form-control {
+    font-size: 20px;
+  }
 }
-
-

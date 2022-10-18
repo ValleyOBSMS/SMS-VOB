@@ -36,7 +36,7 @@ const UserHistory = () => {
     getHistory();
   }, []);
 
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(50);
   const [page, setPage] = React.useState(0);
 
   // Pagination fucntions
@@ -124,7 +124,7 @@ const UserHistory = () => {
                               </a>
                             </td>
                             <td>{hist.receiverPhoneNumber}</td>
-                            <td>{hist.message}</td>
+                            <td>{hist.message.slice(0,30)}...</td>
                             <td className="text-center">
                               <a className="tb-btn-smpl download">
                                 <span
@@ -142,7 +142,7 @@ const UserHistory = () => {
                 </table>
                 <Stack spacing={2}>
                   <TablePagination
-                    rowsPerPageOptions={[5, 10, 25]}
+                    rowsPerPageOptions={[10, 25, 50, 100]}
                     component="div"
                     count={history.length}
                     rowsPerPage={rowsPerPage}

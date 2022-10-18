@@ -40,7 +40,7 @@ const AdminPanel = () => {
     JSON.parse(localUser)?.disableEmail
   );
 
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(50);
   const [page, setPage] = React.useState(0);
 
   // Function To Add Message
@@ -90,8 +90,8 @@ const AdminPanel = () => {
       setEmailError("Email must be valid format");
       validation = false;
     }
-    if (values.password.length < 8) {
-      setPasswordError("Password must be contains 8 characters");
+    if (values.password.length < 6) {
+      setPasswordError("Password must be contains 6 characters");
       validation = false;
     }
     return validation;
@@ -345,7 +345,7 @@ const AdminPanel = () => {
                 </table>
                 <Stack spacing={2}>
                   <TablePagination
-                    rowsPerPageOptions={[5, 10, 25]}
+                    rowsPerPageOptions={[10, 25, 50, 100]}
                     component="div"
                     count={users.length}
                     rowsPerPage={rowsPerPage}

@@ -94,6 +94,7 @@ const UserPanel = () => {
     };
     getMessages();
   }, []);
+
   return (
     <>
       <link
@@ -158,7 +159,7 @@ const UserPanel = () => {
                         disabled={settings?.disableEmail ? true : false}
                         placeholder={
                           settings?.disableEmail
-                            ? "Email temporary disabled by admin"
+                            ? "Email option temporarily disabled"
                             : "Copy & paste only"
                         }
                         onChange={(event) => {

@@ -70,7 +70,7 @@ const AdminMessage = () => {
       });
   };
 
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(50);
   const [page, setPage] = React.useState(0);
 
   // Pagination fucntions
@@ -137,7 +137,7 @@ const AdminMessage = () => {
                 </table>
                 <Stack spacing={2}>
                   <TablePagination
-                    rowsPerPageOptions={[5, 10, 25]}
+                    rowsPerPageOptions={[10, 25, 50, 100]}
                     component="div"
                     count={message.length}
                     rowsPerPage={rowsPerPage}
