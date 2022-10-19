@@ -55,7 +55,7 @@ const UserPanel = () => {
     setNumberError("");
     if (createMessage()) {
       let message = document.getElementById("select-input-message").value;
-      if (!message || message == "custom") {
+      if (!message || message === "custom") {
         message = values.customMessage;
       }
       try {
@@ -64,7 +64,7 @@ const UserPanel = () => {
           receiverEmail: values.email,
           receiverPhoneNumber: values.number,
           message,
-          userId: settings?.id,
+          userId: JSON.parse(localUser)?.userId,
           bbcEmail: settings?.backupEmail,
         };
 
@@ -213,7 +213,7 @@ const UserPanel = () => {
                       <input
                         type="text"
                         name="email"
-                        id="email"
+                        id="messageEmail"
                         className="form-control"
                         autoComplete="off"
                         disabled={settings?.disableEmail ? true : false}

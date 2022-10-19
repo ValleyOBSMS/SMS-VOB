@@ -17,36 +17,13 @@ import Swal from "sweetalert2";
 const Header = () => {
   const navigate = useNavigate();
   const signOutAdmin = () => {
-    const swalWithBootstrapButtons = Swal.mixin({
-      customClass: {
-        confirmButton: "btn btn-success ",
-        cancelButton: "btn btn-danger order-1 left-gap",
-        marginRight: "2px",
-      },
-      buttonsStyling: false,
-    });
-
-    swalWithBootstrapButtons
-      .fire({
-        title: "Are you sure? want to logout",
-        text: "",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonText: "Yes, logout!",
-        cancelButtonText: "No, cancel!",
-        reverseButtons: true,
+    signOut(auth)
+      .then(() => {
+        localStorage.removeItem("valleyobsmsuser");
+        navigate("/admin-login");
       })
-      .then(async (result) => {
-        if (result.isConfirmed) {
-          signOut(auth)
-            .then(() => {
-              localStorage.removeItem("valleyobsmsuser");
-              navigate("/admin-login");
-            })
-            .catch((error) => {
-              console.log(error);
-            });
-        }
+      .catch((error) => {
+        console.log(error);
       });
   };
   return (

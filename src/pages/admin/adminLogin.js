@@ -26,8 +26,8 @@ const AdminLogin = () => {
       setEmailError("Email must be valid form");
       validation = false;
     }
-    if (values.password.length < 8) {
-      setPasswordError("Password must be contain 8 characters");
+    if (values.password.length < 6) {
+      setPasswordError("Password must be contain 6 characters");
       validation = false;
     }
 

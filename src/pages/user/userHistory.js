@@ -6,7 +6,7 @@ import moment from "moment";
 import CircularProgress from "@mui/material/CircularProgress";
 import Box from "@mui/material/Box";
 import Header from "./components/header";
-import { Stack, TablePagination } from "@mui/material";
+import { Pagination, Stack, TablePagination } from "@mui/material";
 import { jsPDF } from "jspdf";
 const localUser = localStorage.getItem("valleyobsmsuser");
 const UserHistory = () => {
@@ -20,6 +20,7 @@ const UserHistory = () => {
     const historyCollectionRef = collection(db, "history");
     const q = query(
       historyCollectionRef,
+      where("userId", "==", JSON.parse(localUser)?.userId),
       where("createdAt", ">=", d),
       orderBy("createdAt", "desc")
     );
@@ -37,11 +38,12 @@ const UserHistory = () => {
   }, []);
 
   const [rowsPerPage, setRowsPerPage] = useState(50);
-  const [page, setPage] = React.useState(0);
+  const [page, setPage] = React.useState(1);
 
   // Pagination fucntions
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
+    console.log(newPage);
   };
 
   const handleChangeRowsPerPage = (event) => {
@@ -134,8 +136,8 @@ const UserHistory = () => {
                     ) : (
                       history
                         .slice(
-                          page * rowsPerPage,
-                          page * rowsPerPage + rowsPerPage
+                          (page - 1) * rowsPerPage,
+                          (page - 1) * rowsPerPage + rowsPerPage
                         )
                         .map((hist, index) => (
                           <tr key={index}>
@@ -167,15 +169,25 @@ const UserHistory = () => {
                     )}
                   </tbody>
                 </table>
-                <Stack spacing={2}>
-                  <TablePagination
-                    rowsPerPageOptions={[10, 25, 50, 100]}
+                <br />
+                <Stack
+                  spacing={2}
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                >
+                  <Pagination
+                    shape="rounded"
+                    color="primary"
+                    onChange={handleChangePage}
                     component="div"
-                    count={history.length}
-                    rowsPerPage={rowsPerPage}
+                    count={
+                      history.length < rowsPerPage
+                        ? 1
+                        : Math.ceil(history.length / rowsPerPage)
+                    }
                     page={page}
-                    onPageChange={handleChangePage}
-                    onRowsPerPageChange={handleChangeRowsPerPage}
                   />
                 </Stack>
               </div>

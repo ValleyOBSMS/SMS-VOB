@@ -14,7 +14,7 @@ import moment from "moment";
 import Swal from "sweetalert2";
 import CircularProgress from "@mui/material/CircularProgress";
 import Box from "@mui/material/Box";
-import { Stack, TablePagination } from "@mui/material";
+import { Pagination, Stack, TablePagination } from "@mui/material";
 const AdminMessage = () => {
   //  Function for list Messages
 
@@ -71,7 +71,7 @@ const AdminMessage = () => {
   };
 
   const [rowsPerPage, setRowsPerPage] = useState(50);
-  const [page, setPage] = React.useState(0);
+  const [page, setPage] = React.useState(1);
 
   // Pagination fucntions
   const handleChangePage = (event, newPage) => {
@@ -106,8 +106,8 @@ const AdminMessage = () => {
                     ) : (
                       message
                         .slice(
-                          page * rowsPerPage,
-                          page * rowsPerPage + rowsPerPage
+                          (page - 1) * rowsPerPage,
+                          (page - 1) * rowsPerPage + rowsPerPage
                         )
                         .map((msg, index) => (
                           <tr key={index}>
@@ -135,15 +135,24 @@ const AdminMessage = () => {
                     )}
                   </tbody>
                 </table>
-                <Stack spacing={2}>
-                  <TablePagination
-                    rowsPerPageOptions={[10, 25, 50, 100]}
+                <Stack
+                  spacing={2}
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                >
+                  <Pagination
+                    shape="rounded"
+                    color="primary"
+                    onChange={handleChangePage}
                     component="div"
-                    count={message.length}
-                    rowsPerPage={rowsPerPage}
+                    count={
+                      message.length < rowsPerPage
+                        ? 1
+                        : Math.ceil(message.length / rowsPerPage)
+                    }
                     page={page}
-                    onPageChange={handleChangePage}
-                    onRowsPerPageChange={handleChangeRowsPerPage}
                   />
                 </Stack>
               </div>

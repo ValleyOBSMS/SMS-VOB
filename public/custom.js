@@ -16,10 +16,10 @@ jQuery(document).ready(function () {
     }
   });
 
-  document.getElementById("email").addEventListener("keypress", (e) => {
+  document.getElementById("messageEmail").addEventListener("keypress", (e) => {
     e.preventDefault();
   });
-  document.getElementById("email").onkeydown = function () {
+  document.getElementById("messageEmail").onkeydown = function () {
     var key = event.keyCode || event.charCode;
 
     if (key == 8 || key == 46) return false;

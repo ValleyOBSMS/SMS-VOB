@@ -58,7 +58,7 @@ const AdminHistory = () => {
   };
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [page, setPage] = React.useState(0);
+  const [page, setPage] = React.useState(1);
 
   // Pagination fucntions
   const handleChangePage = (event, newPage) => {
@@ -170,8 +170,8 @@ const AdminHistory = () => {
                     ) : (
                       history
                         .slice(
-                          page * rowsPerPage,
-                          page * rowsPerPage + rowsPerPage
+                          (page - 1) * rowsPerPage,
+                          (page - 1) * rowsPerPage + rowsPerPage
                         )
                         .map((hist, index) => (
                           <tr key={index}>
@@ -202,15 +202,24 @@ const AdminHistory = () => {
                     )}
                   </tbody>
                 </table>
-                <Stack spacing={2}>
-                  <TablePagination
-                    rowsPerPageOptions={[5, 10, 25]}
+                <Stack
+                  spacing={2}
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                >
+                  <Pagination
+                    shape="rounded"
+                    color="primary"
+                    onChange={handleChangePage}
                     component="div"
-                    count={history.length}
-                    rowsPerPage={rowsPerPage}
+                    count={
+                      history.length < rowsPerPage
+                        ? 1
+                        : Math.ceil(history.length / rowsPerPage)
+                    }
                     page={page}
-                    onPageChange={handleChangePage}
-                    onRowsPerPageChange={handleChangeRowsPerPage}
                   />
                 </Stack>
               </div>

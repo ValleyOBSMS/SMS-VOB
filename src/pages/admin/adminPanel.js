@@ -41,7 +41,7 @@ const AdminPanel = () => {
   );
 
   const [rowsPerPage, setRowsPerPage] = useState(50);
-  const [page, setPage] = React.useState(0);
+  const [page, setPage] = React.useState(1);
 
   // Function To Add Message
   const createMessage = async () => {
@@ -317,8 +317,8 @@ const AdminPanel = () => {
                     ) : (
                       users
                         .slice(
-                          page * rowsPerPage,
-                          page * rowsPerPage + rowsPerPage
+                          (page - 1) * rowsPerPage,
+                          (page - 1) * rowsPerPage + rowsPerPage
                         )
                         .map((user, index) => (
                           <tr key={index}>
@@ -343,15 +343,24 @@ const AdminPanel = () => {
                     )}
                   </tbody>
                 </table>
-                <Stack spacing={2}>
-                  <TablePagination
-                    rowsPerPageOptions={[10, 25, 50, 100]}
+                <Stack
+                  spacing={2}
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                >
+                  <Pagination
+                    shape="rounded"
+                    color="primary"
+                    onChange={handleChangePage}
                     component="div"
-                    count={users.length}
-                    rowsPerPage={rowsPerPage}
+                    count={
+                      users.length < rowsPerPage
+                        ? 1
+                        : Math.ceil(users.length / rowsPerPage)
+                    }
                     page={page}
-                    onPageChange={handleChangePage}
-                    onRowsPerPageChange={handleChangeRowsPerPage}
                   />
                 </Stack>
               </div>
