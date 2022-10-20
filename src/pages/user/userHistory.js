@@ -64,7 +64,7 @@ const UserHistory = () => {
 
     const date = doc.splitTextToSize(
       `Date:   ${moment(new Date(hist.createdAt.seconds * 1000)).format(
-        "DD-MM-YYYY HH:mm a"
+        "MM-DD-YYYY hh:mm A"
       )}`,
       pdfInMM - lMargin - rMargin
     );
@@ -79,24 +79,30 @@ const UserHistory = () => {
       pdfInMM - lMargin - rMargin
     );
 
-    let TO = `${hist.receiverPhoneNumber}, ${hist.receiverEmail}`;
+    let TO = `${hist.receiverPhoneNumber.slice(
+      1,
+      hist.receiverPhoneNumber.length
+    )}, ${hist.receiverEmail}`;
     if (!hist.receiverPhoneNumber) {
       TO = hist.receiverEmail;
     }
     if (!hist.receiverEmail) {
-      TO = hist.receiverPhoneNumber;
+      TO = hist.receiverPhoneNumber.slice(1, hist.receiverPhoneNumber.length);
     }
 
-    const ToText = doc.splitTextToSize(TO, pdfInMM - lMargin - rMargin);
+    const ToText = doc.splitTextToSize(
+      `To: ${TO}`,
+      pdfInMM - lMargin - rMargin
+    );
     const status = doc.splitTextToSize(
       "Status: Sent",
       pdfInMM - lMargin - rMargin
     );
 
     doc.text(lMargin, 20, subject);
-    doc.text(lMargin, 30, date);
-    doc.text(lMargin, 40, FROM);
-    doc.text(lMargin, 50, ToText);
+    doc.text(lMargin, 27, date);
+    doc.text(lMargin, 34, FROM);
+    doc.text(lMargin, 41, ToText);
     doc.text(lMargin, 70, message);
     doc.text(lMargin, 110, status);
     doc.save(`${TO}.pdf`);

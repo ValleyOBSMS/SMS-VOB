@@ -103,6 +103,7 @@ const UserLogin = () => {
                       className="form-control"
                       autoComplete="off"
                       placeholder="Enter Email"
+                      onfocus="this.removeAttribute('readonly');"
                       onChange={(event) => {
                         setValues((prev) => ({
                           ...prev,
@@ -121,6 +122,7 @@ const UserLogin = () => {
                       className="form-control"
                       autoComplete="off"
                       placeholder="Password"
+                      onfocus="this.removeAttribute('readonly');"
                       onChange={(event) => {
                         setValues((prev) => ({
                           ...prev,
